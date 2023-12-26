@@ -5,6 +5,7 @@ type ProgressProps = {
 	fPath?: string;
 	progColor?: "is-primary" | "is-link" | "is-danger";
 	speed?: string;
+	className?: string;
 };
 
 function formatBytes(bytes: number, decimals = 2) {
@@ -27,11 +28,12 @@ export const ProgressBar = ({
 	eta,
 	fPath,
 	speed,
+	className,
 	progColor = "is-primary",
 }: ProgressProps) => {
 	const percentage = ((done * 100) / total).toFixed(1);
 	return (
-		<div className="w-2/3 flex flex-col space-y-2">
+		<div className={`w-2/3 flex flex-col space-y-2 ${className}`}>
 			<div className="flex flex-row justify-between">
 				<span className="font-thin text-center">
 					<span className="font-bold">{formatBytes(done)}</span>

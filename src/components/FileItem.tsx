@@ -8,11 +8,13 @@ import { IconBin } from "./Icons/IconBin";
 import { IconFolderColored } from "./Icons/IconFolderColored";
 import VideoPlayer from "../components/VideoPlayer";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
-interface FileItemProps {
+export interface FileItemProps {
 	name: string;
 	size: string;
 	dir?: boolean;
+	preview?: boolean;
 }
 function detectFileType(fileName: string) {
 	const fileExtension = fileName.split(".").pop()?.toLowerCase();
@@ -43,19 +45,36 @@ const IconDetect = (filename: string) => {
 	}
 };
 
-export default function FileItem({ name, size, dir = false }: FileItemProps) {
+export default function FileItem({
+	name,
+	size,
+	dir = false,
+	preview = false,
+}: FileItemProps) {
 	const [clicked, onclicked] = useState(false);
 	return (
-		<div className="flex flex-col items-center justify-center w-full py-4 space-x-10 overflow-hidden transition-all duration-200 bg-white border border-gray-300 rounded-lg shadow-lg cursor-pointer hover:-translate-y-1 hover:ring-2">
+		<div className="flex flex-col items-center justify-center w-full py-4 space-x-10 overflow-hidden transition-all duration-200 bg-white border border-gray-300 rounded-lg shadow-lg cursor-pointer hover:-translate-y-1 hover:ring-4">
 			<div
 				className="flex flex-row items-center justify-between w-full px-5"
 				onClick={() => onclicked(!clicked)}
 			>
 				<span className="flex flex-row space-x-4">
-					{!dir ? IconDetect(name) : <IconFolderColored />}
-					<span className="font-thin">{name}</span>
+					{dir ? (
+						<Link
+							to={`$/${name}`}
+							className="flex flex-row space-x-4"
+						>
+							<IconFolderColored />
+							<span className="font-thin">{name}</span>
+						</Link>
+					) : (
+						<>
+							{IconDetect(name)}
+							<span className="font-thin">{name}</span>
+						</>
+					)}
 				</span>
-				<span className="font-thin">{size}</span>
+				{!dir && <span className="font-thin">{size}</span>}
 				<div className="flex flex-row space-x-3">
 					<span className="p-1 transition-all duration-300 rounded-sm ring-2 ring-slate-200 hover:bg-slate-200 hover:-translate-y-1">
 						<IconLink className="text-blue-700 hover:scale-110" />
@@ -72,6 +91,7 @@ export default function FileItem({ name, size, dir = false }: FileItemProps) {
 			</div>
 
 			{clicked &&
+				preview &&
 				(detectFileType(name) == "Video" ||
 					detectFileType(name) == "Audio") && (
 					<div className="w-2/3 my-10">

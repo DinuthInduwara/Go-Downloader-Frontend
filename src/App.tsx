@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import { Dashboard } from "./pages/Dashboard";
 import { UploadView } from "./pages/UploadView";
 import { FileManager } from "./pages/FileManager";
+import { RcloneView } from "./pages/RcloneView";
 
 function App() {
 	return (
@@ -16,6 +17,7 @@ function App() {
 						<Route path="/" element={<Dashboard />} />
 						<Route path="/upload" element={<UploadView />} />
 						<Route path="/filemanager" element={<FileManager />} />
+						<Route path="/rclone" element={<RcloneView />} />
 					</Routes>
 				</div>
 			</div>
