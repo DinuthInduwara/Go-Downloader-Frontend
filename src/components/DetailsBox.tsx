@@ -3,7 +3,7 @@ type DetailsBoxProps = {
 	className?: string;
 	Icon: FC;
 	text: string;
-	subText: string;
+	subText: number | string | null | undefined;
 };
 
 export const DetailsBox = ({

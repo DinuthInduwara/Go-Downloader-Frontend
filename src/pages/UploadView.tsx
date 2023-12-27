@@ -1,73 +1,65 @@
 import { UploadURLForm } from "../components/UploadURLForm";
-import { ProgressBar } from "../components/ProgressBar";
-import { IconPause } from "../components/Icons/IconPause";
-import { IconPlay } from "../components/Icons/IconPlay";
 import { WhiteBoard } from "../components/WhiteBoard";
+import { DownloadTaskBox } from "../components/DownloadTaskBox";
+import { useState, useEffect } from "react";
+import { fetchJsonData } from "../utils/UtilFuncs";
+
+type TdownloadTask = {
+	size: number;
+	downloaded: number;
+	fname: string;
+	speed: number;
+	url: string;
+	paused: boolean;
+	error: null | string;
+};
 
 export const UploadView = () => {
+	const [notications, setNotications] = useState<Array<string>>([]);
+	const [uploadTasks, setUploadTasks] = useState<TdownloadTask[]>([]);
+
+	useEffect(() => {
+		const setData = async () => {
+			const data = await fetchJsonData("/api/status");
+			setUploadTasks(data.downloads);
+		};
+		setData();
+
+		// Fetch data every 10 seconds
+		const interval = setInterval(() => {
+			setData();
+		}, 3000);
+
+		// Clean up the interval to prevent memory leaks
+		return () => clearInterval(interval);
+	}, []);
+
 	return (
 		<WhiteBoard>
-			<h1 className="pl-10 pt-5 text-xl font-serif underline ">
+			<h1 className="pt-5 pl-10 font-serif text-xl underline ">
 				Download Engine 2.0.
 			</h1>
-			<div className="mt-10 w-full ">
-				<UploadURLForm />
+			<div className="w-full mt-10 ">
+				<UploadURLForm
+					notications={notications}
+					setNotications={setNotications}
+				/>
 			</div>
-			<h1 className="pl-10 mt-10 pt-5 text-xl font-serif underline ">
+			<h1 className="pt-5 pl-10 mt-10 font-serif text-xl underline ">
 				Download Tasks
 			</h1>
-			<div className="flex flex-col justify-center items-center w-full my-10 px-7 space-y-4 pb-16">
-				<div className="w-full flex flex-row justify-center items-center rounded-lg overflow-hidden border border-gray-300 shadow-lg bg-white py-4 space-x-10 hover:-translate-y-2 transition-all duration-200 hover:ring-8 cursor-pointer">
-					<ProgressBar
-						speed="12mb/s"
-						done={12333213}
-						total={34334243}
-						eta="32d"
-						fPath="C:\Users\ss\Downloads\Compressed.png"
-						progColor="is-link"
+			<div className="flex flex-col items-center justify-center w-full pb-16 my-10 space-y-4 px-7">
+				{uploadTasks.map((task) => (
+					<DownloadTaskBox
+						setNotications={setNotications}
+						url={task.url}
+						active={task.paused}
+						speed={task.speed}
+						done={task.downloaded}
+						total={task.size}
+						fName={task.fname}
 					/>
-					<div className="flex flex-row space-x-2">
-						<button className="button is-danger">X</button>
-						<button className="button is-warning">
-							<IconPause />
-						</button>
-					</div>
-				</div>
-				<div className="w-full flex flex-row justify-center items-center rounded-lg overflow-hidden border border-gray-300 shadow-lg bg-white py-4 space-x-10 hover:-translate-y-2 transition-all duration-200 hover:ring-8 cursor-pointer">
-					<ProgressBar
-						speed="12mb/s"
-						done={23832333}
-						total={34234343}
-						eta="23m"
-						fPath="C:\Users\ss\Downloads\Compressed.png"
-						progColor="is-link"
-					/>
-					<div className="flex flex-row space-x-2">
-						<button className="button is-danger">X</button>
-						<button className="button is-primary">
-							<IconPlay />
-						</button>
-					</div>
-				</div>
-				<div className="w-full flex flex-row justify-center items-center rounded-lg overflow-hidden border border-gray-300 shadow-lg bg-white py-4 space-x-10 hover:-translate-y-2 transition-all duration-200 hover:ring-8 cursor-pointer">
-					<ProgressBar
-						speed="12mb/s"
-						done={23832333}
-						total={34234343}
-						eta="23m"
-						fPath="C:\Users\ss\Downloads\Compressed.png"
-						progColor="is-link"
-					/>
-					<div className="flex flex-row space-x-2">
-						<button className="button is-danger">X</button>
-						<button
-							className="button is-primary is-loading"
-							disabled
-						>
-							<IconPlay />
-						</button>
-					</div>
-				</div>
+				))}
 			</div>
 		</WhiteBoard>
 	);

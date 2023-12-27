@@ -1,6 +1,8 @@
+import { formatBytes } from "../utils/UtilFuncs";
+
 type ProgressProps = {
-	total: number;
-	done: number;
+	total: number | undefined;
+	done: number | undefined;
 	eta?: string;
 	fPath?: string;
 	progColor?: "is-primary" | "is-link" | "is-danger";
@@ -8,30 +10,16 @@ type ProgressProps = {
 	className?: string;
 };
 
-function formatBytes(bytes: number, decimals = 2) {
-	if (bytes === 0) return "0 Bytes";
-
-	const k = 1024;
-	const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-
-	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	const formattedSize = parseFloat(
-		(bytes / Math.pow(k, i)).toFixed(decimals)
-	);
-
-	return `${formattedSize} ${sizes[i]}`;
-}
-
 export const ProgressBar = ({
-	total,
-	done,
+	total = 0,
+	done = 0,
 	eta,
 	fPath,
 	speed,
 	className,
 	progColor = "is-primary",
 }: ProgressProps) => {
-	const percentage = ((done * 100) / total).toFixed(1);
+	const percentage = (done * 100) / total;
 	return (
 		<div className={`w-2/3 flex flex-col space-y-2 ${className}`}>
 			<div className="flex flex-row justify-between">
@@ -42,10 +30,10 @@ export const ProgressBar = ({
 				</span>
 				{speed && (
 					<span className="text-sm font-semibold text-slate-600">
-						{speed}
+						{percentage === 100 ? "Compeleted" : speed}
 					</span>
 				)}
-				<span>{percentage}%</span>
+				<span>{percentage.toFixed(1)}%</span>
 			</div>
 			<progress
 				className={`progress ${progColor}`}
@@ -61,7 +49,7 @@ export const ProgressBar = ({
 					</span>
 				)}
 				{eta && (
-					<span className="font-thin  items-center  text-sm pl-5">
+					<span className="items-center pl-5 text-sm font-thin">
 						<span className="font-semibold">{eta}</span> &nbsp;
 						Remaining...
 					</span>
